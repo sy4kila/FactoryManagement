@@ -19,9 +19,22 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Set the project ID
+gcloud --quiet config set project citric-banner-305310
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to set project."
+  exit 1
+fi
+
+# Verify that the project is set correctly
+gcloud config list project
+
 # Run Firebase Test Lab tests
-echo "Running Firebase Test Lab tests..."
-# Add your Firebase Test Lab command here
+gcloud firebase test android run \
+  --type instrumentation \
+  --app build/app/outputs/apk/debug/app-debug.apk \
+  --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+  --timeout 3m
 
 # Check the status of the Firebase Test Lab command
 if [ $? -ne 0 ]; then
