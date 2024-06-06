@@ -36,12 +36,13 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Run Firebase Test Lab tests
+# Run Firebase Test Lab tests with appropriate sharding
 gcloud firebase test android run \
   --type instrumentation \
   --app build/app/outputs/apk/debug/app-debug.apk \
   --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-  --timeout 3m
+  --timeout 3m \
+  --num-shards=1
 
 # Check the status of the Firebase Test Lab command
 if [ $? -ne 0 ]; then
