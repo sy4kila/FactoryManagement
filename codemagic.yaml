@@ -35,13 +35,14 @@ workflows:
         credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT
         track: internal
         submit_as_draft: true
+
   android-workflow:
     name: Android Workflow
     instance_type: mac_mini_m1
     max_build_duration: 120
     environment:
       groups:
-        - google_credentials # <-- (Includes GCLOUD_KEY_FILE, GOOGLE_CREDENTIALS)
+        - google_credentials # <-- (Includes GCLOUD_KEY_FILE_CONTENT, GOOGLE_CREDENTIALS)
       vars:
         FIREBASE_PROJECT: "fe-community-dev"
       flutter: stable
@@ -63,13 +64,9 @@ workflows:
       - name: Run Firebase Test Lab tests
         script: |
           set -ex
-
-          echo $GCLOUD_KEY_FILE | base64 --decode > ./gcloud_key_file.json
-
+          echo $GCLOUD_KEY_FILE_CONTENT | base64 --decode > ./gcloud_key_file.json
           gcloud auth activate-service-account --key-file=gcloud_key_file.json
-
           gcloud --quiet config set project $FIREBASE_PROJECT
-
           gcloud firebase test android run \
             --type instrumentation \
             --app build/app/outputs/apk/debug/app-debug.apk \
@@ -80,6 +77,7 @@ workflows:
       - build/**/outputs/**/*.aab
       - build/**/outputs/**/mapping.txt
       - flutter_drive.log
+
   ios-workflow:
     name: iOS Workflow
     instance_type: mac_mini_m1
@@ -97,15 +95,13 @@ workflows:
       - name: Configure Firebase access
         script: |
           set -e
-          echo $GCLOUD_KEY_FILE | base64 --decode > ./gcloud_key_file.json          
+          echo $GCLOUD_KEY_FILE_CONTENT | base64 --decode > ./gcloud_key_file.json          
           gcloud auth activate-service-account --key-file=gcloud_key_file.json
           gcloud --quiet config set project $FIREBASE_PROJECT
       - name: Build app for testing
         script: |
           set -ex
-          
           flutter build ios integration_test/app_test.dart --release
-          
           cd ios
           xcodebuild \
             -workspace Runner.xcworkspace \

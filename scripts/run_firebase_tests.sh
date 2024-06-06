@@ -3,17 +3,17 @@
 # Echo a message to ensure the script is running
 echo "Starting Firebase Test Lab tests..."
 
-# Path to the service account key file
-KEY_FILE_PATH="../secrets/citric-banner-305310-d9650394be93.json"
+# Decode the service account key file content from the environment variable
+echo "$GCLOUD_KEY_FILE_CONTENT" | base64 --decode > gcloud_key_file.json
 
 # Check if the JSON file exists and is not empty
-if [ ! -s $KEY_FILE_PATH ]; then
-  echo "Error: $KEY_FILE_PATH is missing or empty."
+if [ ! -s gcloud_key_file.json ]; then
+  echo "Error: gcloud_key_file.json is missing or empty."
   exit 1
 fi
 
 # Authenticate using the service account key file
-gcloud auth activate-service-account --key-file=$KEY_FILE_PATH
+gcloud auth activate-service-account --key-file=gcloud_key_file.json
 if [ $? -ne 0 ]; then
   echo "Error: Failed to activate service account."
   exit 1
@@ -30,3 +30,6 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Firebase Test Lab tests completed successfully."
+
+# Cleanup
+rm gcloud_key_file.json
