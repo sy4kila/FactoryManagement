@@ -29,6 +29,13 @@ fi
 # Verify that the project is set correctly
 gcloud config list project
 
+# Enable Cloud Tool Results API if not already enabled
+gcloud services enable toolresults.googleapis.com
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to enable Cloud Tool Results API."
+  exit 1
+fi
+
 # Run Firebase Test Lab tests
 gcloud firebase test android run \
   --type instrumentation \
