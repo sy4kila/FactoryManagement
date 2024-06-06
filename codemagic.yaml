@@ -10,6 +10,8 @@ workflows:
     environment:
       groups:
         - google_credentials
+      vars:
+        TERM: "xterm"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -45,6 +47,7 @@ workflows:
         - google_credentials # <-- (Includes GCLOUD_KEY_FILE, GOOGLE_CREDENTIALS)
       vars:
         FIREBASE_PROJECT: "citric-banner-305310"  # Ensure this is the project ID
+        TERM: "xterm"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -61,4 +64,62 @@ workflows:
           cd android
           ./gradlew app:assembleAndroidTest
           ./gradlew app:assembleDebug -Ptarget="$CM_BUILD_DIR/integration_test/app_test.dart"
-      - n
+      - name: Run Firebase Test Lab tests
+        script: |
+          set -ex
+          echo $GCLOUD_KEY_FILE_CONTENT | base64 --decode > ./gcloud_key_file.json
+          gcloud auth activate-service-account --key-file=gcloud_key_file.json
+          gcloud --quiet config set project citric-banner-305310  # Ensure this is the project ID
+          gcloud firebase test android run \
+            --type instrumentation \
+            --app build/app/outputs/apk/debug/app-debug.apk \
+            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --timeout 3m
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+      - flutter_drive.log
+
+  ios-workflow:
+    name: iOS Workflow
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      groups:
+        - google_credentials
+      vars:
+        FIREBASE_PROJECT: "citric-banner-305310"  # Ensure this is the project ID
+        TERM: "xterm"
+        BUNDLE_ID: "dev.flutterexplained.cicdtutorial"
+        TEST_BUNDLE_ID: "dev.flutterexplained.cicdtutorial.uitests.xctrunner"
+    scripts:
+      - name: Configure Firebase access
+        script: |
+          set -e
+          echo $GCLOUD_KEY_FILE_CONTENT | base64 --decode > ./gcloud_key_file.json          
+          gcloud auth activate-service-account --key-file=gcloud_key_file.json
+          gcloud --quiet config set project citric-banner-305310  # Ensure this is the project ID
+      - name: Build app for testing
+        script: |
+          set -ex
+          flutter build ios integration_test/app_test.dart --release
+          cd ios
+          xcodebuild \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -config Flutter/Release.xcconfig \
+            -derivedDataPath "../build/ios_integ" \
+            -sdk iphoneos \
+            build-for-testing
+      - name: Package tests bundle
+        script: |
+          set -ex
+          cd ./build/ios_integ/Build/Products
+          zip -r "ios_tests.zip" *-iphoneos *.xctestrun
+      - name: Run tests in Firebase Test Lab
+        script: gcloud firebase test ios run --test "build/ios_integ/Build/Products/ios_tests.zip"
+    artifacts:
+      - "**/ios_tests.zip"
