@@ -1,11 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.factory_mgmt2.test">
 
-    <application>
-        <uses-library android:name="android.test.runner" android:required="true" />
+    <instrumentation
+        android:name="androidx.test.runner.AndroidJUnitRunner"
+        android:targetPackage="com.example.factory_mgmt2" />
 
-        <instrumentation
-            android:name="androidx.test.runner.AndroidJUnitRunner"
-            android:targetPackage="com.example.factory_mgmt2" />
+    <application>
+        <!-- Optional: any application-specific settings -->
     </application>
 </manifest>
