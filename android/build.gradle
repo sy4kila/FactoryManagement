@@ -6,11 +6,6 @@ allprojects {
 }
 
 rootProject.buildDir = '../build'
-
-dependencies {
-    testImplementation 'junit:junit:4.12'
-    classpath 'com.android.tools.build:gradle:4.2.2' // Update this line
-}
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
