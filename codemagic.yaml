@@ -24,23 +24,23 @@ workflows:
           cd android
           ./gradlew app:assembleAndroidTest
           ./gradlew app:assembleDebug -Ptarget="$CM_BUILD_DIR/integration_test/app_test.dart"
+      - name: Verify APKs
+        script: |
+          echo "Verifying APKs..."
+          ls build/app/outputs/apk/debug/
+          ls build/app/outputs/apk/androidTest/debug/
+          echo "Verification complete."
       - name: Run Firebase Test Lab tests
         script: |
           set -ex
           echo $GCLOUD_KEY_FILE_CONTENT | base64 --decode > ./gcloud_key_file.json
           gcloud auth activate-service-account --key-file=gcloud_key_file.json
-          gcloud --quiet config set project $FIREBASE_PROJECT  # Ensure this is the project ID
+          gcloud --quiet config set project citric-banner-305310  # Ensure this is the project ID
           gcloud firebase test android run \
             --type instrumentation \
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             --timeout 3m
-
-    artifacts:
-      - build/**/outputs/**/*.apk
-      - build/**/outputs/**/*.aab
-      - build/**/outputs/**/mapping.txt
-      - flutter_drive.log
 
   ios-workflow:
     name: iOS Workflow
@@ -80,7 +80,7 @@ workflows:
           set -ex
           echo $GCLOUD_KEY_FILE | base64 --decode > ./gcloud_key_file.json
           gcloud auth activate-service-account --key-file=gcloud_key_file.json
-          gcloud --quite config set project $FIREBASE_PROJECT
+          gcloud --quiet config set project $FIREBASE_PROJECT
           
           gcloud firebase test android run \
             --type instrumentation \
@@ -92,4 +92,3 @@ workflows:
       - build/**/outputs/**/*.aab
       - build/**/outputs/**/mapping.txt
       - flutter_drive.log
-
