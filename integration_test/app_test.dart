@@ -43,12 +43,16 @@ void main() {
         });
 
         // Enter OTP
+        print('Entering OTP...');
         await tester.enterText(otpField, '123456');
         await Future.delayed(const Duration(seconds: 1));
+        print('Entered OTP.');
 
         // Tap the activate button
+        print('Tapping Activate button...');
         await tester.tap(activateButton);
         await tester.pumpAndSettle();
+        print('Tapped Activate button.');
 
         // Further checks or interactions can be added here
       } catch (e) {
