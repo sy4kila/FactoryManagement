@@ -7,19 +7,22 @@ void main() {
   group('App Test', () {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-    testWidgets("full app test", (tester) async {
+    testWidgets("full app test", (WidgetTester tester) async {
+      // Initialize the app
       app.main();
       await tester.pumpAndSettle();
+
+      // Log the entire widget tree
+      debugDumpApp();
 
       // Verify the presence of the TextFormField widgets
       var emailFields = find.byType(TextFormField);
       var passwordFields = find.byType(TextFormField);
       var loginButtons = find.byType(ElevatedButton);
 
-      // Check that there is at least one TextFormField for email and password
-      expect(emailFields, findsWidgets);
-      expect(passwordFields, findsWidgets);
-      expect(loginButtons, findsWidgets);
+      // Ensure the TextFormField and ElevatedButton widgets are found
+      expect(emailFields, findsNWidgets(2));
+      expect(loginButtons, findsOneWidget);
 
       // Log the found widgets for debugging
       print('Email fields found: ${tester.widgetList(emailFields).length}');
@@ -42,14 +45,14 @@ void main() {
       await tester.tap(loginButton);
       await tester.pumpAndSettle();
 
-      var firstCheckbox = find.byType(Checkbox).first;
+      var firstCheckboxFinder = find.byType(Checkbox).first;
 
       // Verify the presence of the Checkbox widget
-      expect(firstCheckbox, findsOneWidget);
+      expect(firstCheckboxFinder, findsOneWidget);
 
       // Check the initial state of the checkbox
       expect(
-        tester.getSemantics(firstCheckbox),
+        tester.getSemantics(firstCheckboxFinder),
         matchesSemantics(
           hasTapAction: true,
           hasCheckedState: true,
@@ -61,13 +64,13 @@ void main() {
       );
 
       // Tap the checkbox to change its state
-      await tester.tap(firstCheckbox);
+      await tester.tap(firstCheckboxFinder);
       await tester.pumpAndSettle();
       await Future.delayed(const Duration(seconds: 1));
 
       // Verify the changed state of the checkbox
       expect(
-        tester.getSemantics(firstCheckbox),
+        tester.getSemantics(firstCheckboxFinder),
         matchesSemantics(
           hasTapAction: true,
           hasCheckedState: true,
