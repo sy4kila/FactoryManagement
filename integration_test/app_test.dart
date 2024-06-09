@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:factory_mgmt2/otp_confirmation_page.dart';
 import 'package:factory_mgmt2/activation.dart';
-import 'package:factory_mgmt2/main.dart';  // Ensure MyHomePage is defined here
+import 'package:factory_mgmt2/main.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

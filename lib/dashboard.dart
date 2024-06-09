@@ -20,132 +20,132 @@ class _DashboardPageState extends State<DashboardPage> {
         centerTitle: true,
         backgroundColor: Colors.red,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(height: screenSize.height * 0.02), // Gap between AppBar and frame
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 5,
-                  blurRadius: 10,
-                  offset: const Offset(5, 5),
-                ),
-                BoxShadow(
-                  color: Colors.white.withOpacity(0.5),
-                  spreadRadius: 5,
-                  blurRadius: 10,
-                  offset: const Offset(-5, -5),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                if (selectedFactory == 1)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.warning,
-                          color: Colors.red,
-                          size: screenSize.width * 0.06,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'ABD1234 IS UNREACHABLE!',
-                            style: TextStyle(
-                              fontSize: screenSize.width * 0.05,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: screenSize.height * 0.02), // Gap between AppBar and frame
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 5,
+                    blurRadius: 10,
+                    offset: const Offset(5, 5),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 10,
+                    offset: const Offset(-5, -5),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  if (selectedFactory == 1)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.warning,
+                            color: Colors.red,
+                            size: screenSize.width * 0.06,
                           ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'ABD1234 IS UNREACHABLE!',
+                              style: TextStyle(
+                                fontSize: screenSize.width * 0.05,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        ' ${_getPowerConsumption(selectedFactory)} kW',
+                        style: TextStyle(
+                          fontSize: screenSize.width * 0.06,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
-                      ],
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  )
-                else
+                  SizedBox(
+                    height: screenSize.height * 0.48, // Adjusted height
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                        childAspectRatio: 1 / 1.1, // Adjusted aspect ratio to make all boxes same size
+                      ),
+                      itemCount: 4,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300], // Light grey color
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(5, 5),
+                              ),
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(-5, -5),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.asset(
+                              _getImageForFactory(selectedFactory, index),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(screenSize.width * 0.05),
                     child: Text(
-                      ' ${_getPowerConsumption(selectedFactory)} kW',
+                      selectedFactory == 1 ? '--:--' : _getTimestamp(selectedFactory),
                       style: TextStyle(
-                        fontSize: screenSize.width * 0.06,
-                        fontWeight: FontWeight.bold,
+                        fontSize: screenSize.width * 0.04,
                         color: Colors.black,
                       ),
                       textAlign: TextAlign.center,
                     ),
                   ),
-                SizedBox(
-                  height: screenSize.height * 0.48, // Adjusted height
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: 1 / 1.1, // Adjusted aspect ratio to make all boxes same size
-                    ),
-                    itemCount: 4,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300], // Light grey color
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(5, 5),
-                            ),
-                            BoxShadow(
-                              color: Colors.white.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(-5, -5),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.asset(
-                            _getImageForFactory(selectedFactory, index),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(screenSize.width * 0.05),
-                  child: Text(
-                    selectedFactory == 1 ? '--:--' : _getTimestamp(selectedFactory),
-                    style: TextStyle(
-                      fontSize: screenSize.width * 0.04,
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: screenSize.height * 0.02), // Gap between frame and buttons
-          Expanded(
-            child: Container(
+            SizedBox(height: screenSize.height * 0.02), // Gap between frame and buttons
+            Container(
               margin: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -205,9 +205,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 }),
               ),
             ),
-          ),
-          SizedBox(height: screenSize.height * 0.02), // Gap between buttons and navigation bar
-        ],
+            SizedBox(height: screenSize.height * 0.02), // Gap between buttons and navigation bar
+          ],
+        ),
       ),
     );
   }
