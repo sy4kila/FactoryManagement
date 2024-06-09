@@ -2,84 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:factory_mgmt2/main.dart' as app;
 import 'package:integration_test/integration_test.dart';
+import 'package:factory_mgmt2/otp_confirmation_page.dart';
+import 'package:factory_mgmt2/activation.dart';
 
 void main() {
-  group('App Test', () {
-    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-    testWidgets("full app test", (WidgetTester tester) async {
-      // Initialize the app
-      app.main();
+  group('App Test', () {
+    testWidgets("OTP Confirmation Page test", (WidgetTester tester) async {
+      // Initialize the OTP Confirmation Page
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: OTPConfirmationPage(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Log the entire widget tree
       debugDumpApp();
 
-      // Verify the presence of the TextFormField widgets
-      var emailFields = find.byType(TextFormField);
-      var passwordFields = find.byType(TextFormField);
-      var loginButtons = find.byType(ElevatedButton);
+      // Verify the presence of the TextField widget for OTP
+      var otpField = find.byType(TextField);
+      var activateButton = find.byType(ElevatedButton);
 
-      // Ensure the TextFormField and ElevatedButton widgets are found
-      expect(emailFields, findsNWidgets(2));
-      expect(loginButtons, findsOneWidget);
+      // Log the state of the widget tree for debugging
+      print('OTP fields found: ${otpField.evaluate().length}');
+      print('Activate buttons found: ${activateButton.evaluate().length}');
 
-      // Log the found widgets for debugging
-      print('Email fields found: ${tester.widgetList(emailFields).length}');
-      print('Password fields found: ${tester.widgetList(passwordFields).length}');
-      print('Login buttons found: ${tester.widgetList(loginButtons).length}');
+      // Ensure the TextField and ElevatedButton widgets are found
+      expect(otpField, findsOneWidget, reason: 'Expected to find 1 TextField widget for OTP');
+      expect(activateButton, findsOneWidget, reason: 'Expected to find 1 ElevatedButton widget for activation');
 
-      var emailField = emailFields.first;
-      var passwordField = passwordFields.last;
-      var loginButton = loginButtons.first;
-
-      // Enter text for the email address
-      await tester.enterText(emailField, 'flutterexp@gmail.com');
+      // Enter OTP
+      await tester.enterText(otpField, '123456');
       await Future.delayed(const Duration(seconds: 1));
 
-      // Enter text for the password
-      await tester.enterText(passwordField, '123456');
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Tap the login button
-      await tester.tap(loginButton);
+      // Tap the activate button
+      await tester.tap(activateButton);
       await tester.pumpAndSettle();
 
-      var firstCheckboxFinder = find.byType(Checkbox).first;
+      // Further checks or interactions can be added here
+    });
 
-      // Verify the presence of the Checkbox widget
-      expect(firstCheckboxFinder, findsOneWidget);
-
-      // Check the initial state of the checkbox
-      expect(
-        tester.getSemantics(firstCheckboxFinder),
-        matchesSemantics(
-          hasTapAction: true,
-          hasCheckedState: true,
-          isChecked: false,
-          hasEnabledState: true,
-          isEnabled: true,
-          isFocusable: true,
+    testWidgets("Account Activation Page test", (WidgetTester tester) async {
+      // Initialize the Account Activation Page
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: AccountActivationPage(),
         ),
       );
-
-      // Tap the checkbox to change its state
-      await tester.tap(firstCheckboxFinder);
       await tester.pumpAndSettle();
+
+      // Log the entire widget tree
+      debugDumpApp();
+
+      // Verify the presence of the TextField widget for phone number
+      var phoneNumberField = find.byType(TextField);
+      var getActivationCodeButton = find.byType(ElevatedButton);
+
+      // Log the state of the widget tree for debugging
+      print('Phone number fields found: ${phoneNumberField.evaluate().length}');
+      print('Get activation code buttons found: ${getActivationCodeButton.evaluate().length}');
+
+      // Ensure the TextField and ElevatedButton widgets are found
+      expect(phoneNumberField, findsOneWidget, reason: 'Expected to find 1 TextField widget for phone number');
+      expect(getActivationCodeButton, findsOneWidget, reason: 'Expected to find 1 ElevatedButton widget for getting activation code');
+
+      // Enter phone number
+      await tester.enterText(phoneNumberField, '0123456789');
       await Future.delayed(const Duration(seconds: 1));
 
-      // Verify the changed state of the checkbox
-      expect(
-        tester.getSemantics(firstCheckboxFinder),
-        matchesSemantics(
-          hasTapAction: true,
-          hasCheckedState: true,
-          isChecked: true,
-          hasEnabledState: true,
-          isEnabled: true,
-          isFocusable: true,
-        ),
-      );
+      // Tap the get activation code button
+      await tester.tap(getActivationCodeButton);
+      await tester.pumpAndSettle();
+
+      // Further checks or interactions can be added here
     });
   });
 }
